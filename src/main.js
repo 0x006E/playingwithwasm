@@ -63,18 +63,15 @@ if (isLittleEndian) {
 imageData.data.set(buf8);
 
 ctx.putImageData(imageData, 0, 0);
+const offscreen = cvs.transferControlToOffscreen();
 
-async function* asyncGenerator() {
-  let i = 0;
-  while (i < canvasWidth) {
-    yield i++;
-  }
-}
-(async function () {
-  for await (let num of asyncGenerator()) draw(num, num, [234, 245, 155]);
-  imageData.data.set(buf8);
-  ctx.putImageData(imageData, 0, 0);
-})();
+const workerCode = document.getElementById("worker").textContent;
+const blob = new Blob([workerCode], { type: "text/javascript" });
+const url = URL.createObjectURL(blob);
+const worker = new Worker(url);
+
+worker.postMessage({ msg: "start", isLittleEndian: isLittleEndian });
+
 str = [];
 fetch("../out/play.wasm")
   .then((response) => response.arrayBuffer())
