@@ -3,6 +3,7 @@ LLVM_VERSION ?= 12
 DEPS = 
 OBJ = out/play.o
 OUTPUT = out/play.wasm
+INCLUDES_OBJ = out/printf.o
 
 COMPILE_FLAGS = -Wall \
 		--target=wasm32 \
@@ -24,14 +25,15 @@ $(OUTPUT): $(OBJ) Makefile
 		--strip-all \
 		--export-dynamic \
 		--allow-undefined \
-		--initial-memory=131072 \
+		--import-memory \
 		-error-limit=0 \
 		--lto-O3 \
 		-O3 \
 		--gc-sections \
 		$(OBJ) \
+		$(INCLUDES_OBJ) \
 
-%.o: src/%.c $(DEPS) Makefile
+%.o: %.c $(DEPS) printf.h Makefile 
 	clang-$(LLVM_VERSION) \
 		-c \
 		$(COMPILE_FLAGS) \
@@ -44,4 +46,4 @@ play.wat: $(OUTPUT) Makefile
 wat: play.wat
 
 clean:
-	rm -f $(OBJ) $(OUTPUT) play.wat
+	rm -f $(OBJ) $(INCLUDES_OBJ) $(OUTPUT) play.wat
