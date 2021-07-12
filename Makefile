@@ -3,7 +3,7 @@ LLVM_VERSION ?= 12
 DEPS = 
 OBJ = out/play.o
 OUTPUT = out/play.wasm
-INCLUDES_OBJ = out/printf.o
+INCLUDES_OBJ = $(wildcard include/*.o) $(wildcard include/*.a)
 
 COMPILE_FLAGS = -Wall \
 		--target=wasm32 \
@@ -16,7 +16,8 @@ COMPILE_FLAGS = -Wall \
 		-fdata-sections \
 		-DPRINTF_DISABLE_SUPPORT_FLOAT=1 \
 		-DPRINTF_DISABLE_SUPPORT_LONG_LONG=1 \
-		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1
+		-DPRINTF_DISABLE_SUPPORT_PTRDIFF_T=1 \
+		-I ./include \
 
 $(OUTPUT): $(OBJ) Makefile
 	wasm-ld-$(LLVM_VERSION) \
@@ -33,7 +34,7 @@ $(OUTPUT): $(OBJ) Makefile
 		$(OBJ) \
 		$(INCLUDES_OBJ) \
 
-%.o: %.c $(DEPS) printf.h Makefile 
+%.o: %.c $(DEPS) $(wildcard includes/*.h)  Makefile 
 	clang-$(LLVM_VERSION) \
 		-c \
 		$(COMPILE_FLAGS) \

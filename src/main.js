@@ -4,7 +4,7 @@ var imageData;
 onmessage = function (e) {
   switch (e.data.EVENT) {
     case "INITIALIZE":
-      const memory = new WebAssembly.Memory({ initial: 500, maximum: 500 });
+      const memory = new WebAssembly.Memory({ initial: 1000, maximum: 1000 });
       imageData = e.data.imageData;
       const canvasWorker = new Worker("canvasWorker.js");
       fetch("../out/play.wasm")
@@ -21,24 +21,23 @@ onmessage = function (e) {
             instance = results.instance;
             instance.exports.main();
             const screenPointer = instance.exports.init(
-              imageData.width,
-              imageData.height
+              imageData.width * 2,
+              imageData.height * 2
             );
             const screen = new Uint8ClampedArray(
               memory.buffer,
               screenPointer,
-              imageData.width * imageData.height * 4
+              imageData.width * imageData.height * 4 * 4
             );
             const img = new ImageData(
               screen,
-              imageData.width,
-              imageData.height
+              imageData.width * 2,
+              imageData.height * 2
             );
+            instance.exports.loop(screenPointer, imageData.width);
+            console.log(instance.exports.sin_test(3.14));
+            console.log(Math.sin(3.14));
 
-            instance.exports.loop(
-              screenPointer,
-              imageData.width * imageData.height
-            );
             const render = () => {
               postMessage({ imageData: img });
               requestAnimationFrame(render);

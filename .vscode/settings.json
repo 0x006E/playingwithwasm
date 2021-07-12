@@ -3,6 +3,8 @@
     "C_Cpp.errorSquiggles": "Disabled",
     "files.associations": {
         "*.js": "javascriptreact",
-        "printf.h": "c"
-    }
+        "printf.h": "c",
+        "openlibm_math.h": "c"
+    },
+    "liveServer.settings.port": 5501
 }
